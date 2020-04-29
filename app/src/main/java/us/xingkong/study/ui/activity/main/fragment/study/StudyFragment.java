@@ -1,5 +1,6 @@
-package us.xingkong.study.ui.activity.main.fragment.read;
+package us.xingkong.study.ui.activity.main.fragment.study;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,13 +13,14 @@ import androidx.lifecycle.ViewModelProvider;
 
 import us.xingkong.study.R;
 
-public class ReadFragment extends Fragment {
+public class StudyFragment extends Fragment {
 
-    private ReadViewModel readViewModel;
+    private StudyViewModel studyViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        readViewModel = new ViewModelProvider(this).get(ReadViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_read, container, false);
+        studyViewModel = new ViewModelProvider(this).get(StudyViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_study, container, false);
+        ((TextView)root.findViewById(R.id.title)).setTypeface(Typeface.DEFAULT_BOLD);
         return root;
     }
 }

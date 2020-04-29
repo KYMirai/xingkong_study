@@ -1,7 +1,9 @@
 package us.xingkong.study.ui.activity.main;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.View;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -19,6 +21,7 @@ import us.xingkong.study.R2;
 import us.xingkong.study.ui.activity.main.fragment.read.ReadFragment;
 import us.xingkong.study.ui.activity.main.fragment.home.HomeFragment;
 import us.xingkong.study.ui.activity.main.fragment.me.MeFragment;
+import us.xingkong.study.ui.activity.main.fragment.study.StudyFragment;
 import us.xingkong.study.utils.Utils;
 
 import static androidx.fragment.app.FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
@@ -39,9 +42,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        int[] ids = new int[]{R.id.navigation_home, R.id.navigation_read, R.id.navigation_me};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
+        int[] ids = new int[]{R.id.navigation_home, R.id.navigation_study, R.id.navigation_read, R.id.navigation_me};
         pager.setAdapter(new AppPagerAdapter(getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT,
-                new Fragment[]{new HomeFragment(), new ReadFragment(), new MeFragment()}));
+                new Fragment[]{new HomeFragment(), new StudyFragment(), new ReadFragment(), new MeFragment()}));
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

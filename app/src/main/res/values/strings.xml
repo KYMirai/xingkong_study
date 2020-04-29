@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">demo</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="title_home">首页</string>
-    <string name="title_dashboard">阅读</string>
-    <string name="title_notifications">我的</string>
+    <string name="title_main">首页</string>
+    <string name="title_study">学习</string>
+    <string name="title_read">阅读</string>
+    <string name="title_mine">我的</string>
+    <string name="hint_research">搜索内容</string>
 </resources>
