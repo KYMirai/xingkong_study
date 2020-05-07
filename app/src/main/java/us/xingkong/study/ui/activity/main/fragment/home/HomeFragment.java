@@ -53,8 +53,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void initView() {
-        Fragment[] fragments = new Fragment[]{new SubscribeFragment(), new RecommendFragment()};
-        String[] titles = new String[]{"关注", "推荐"};
+        Fragment[] fragments = new Fragment[]{new RecommendFragment(), new SubscribeFragment(),};
+        String[] titles = new String[]{"推荐", "关注"};
         viewPager.setAdapter(new FragmentPagerAdapter(getChildFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
             @Override
             public int getCount() {

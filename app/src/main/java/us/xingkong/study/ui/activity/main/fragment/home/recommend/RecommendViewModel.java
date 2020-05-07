@@ -1,19 +1,23 @@
 package us.xingkong.study.ui.activity.main.fragment.home.recommend;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RecommendViewModel extends ViewModel {
 
-    private MutableLiveData<String> mText;
-
     public RecommendViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is home fragment");
     }
 
-    LiveData<String> getText() {
-        return mText;
+    ArrayList<Map<String, Object>> getData() {
+        ArrayList<Map<String, Object>> list = new ArrayList<>();
+        list.add(new HashMap<>());
+        list.add(new HashMap<>());
+        list.add(new HashMap<>());
+        list.add(new HashMap<>());
+        list.add(new HashMap<>());
+        return list;
     }
 }

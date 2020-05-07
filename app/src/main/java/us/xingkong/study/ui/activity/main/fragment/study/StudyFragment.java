@@ -47,48 +47,15 @@ public class StudyFragment extends Fragment {
     @SuppressLint("SetTextI18n")
     @OnClick(R2.id.sign)
     void sign(View view) {
-        day++;
-//        if (day < 7) {
-//            day++;
-//        } else {
-//            day = 0;
-//        }
-        createDropAnimator(position, position.getMeasuredWidth(), day % 8 == 0 ? 0 : Utils.dip2px(view.getContext(), 23 + (day % 8) * 42)).start();
-
         final boolean[] tmp = {true};
+        day++;
+        createDropAnimator(position, position.getMeasuredWidth(), Utils.dip2px(view.getContext(), 23 + (((day - 1) % 7) + 1) * 42)).start();
         ValueAnimator animator = ValueAnimator.ofInt(dayBg.getMeasuredWidth(), 0, Utils.dip2px(dayBg.getContext(), 120));
         animator.addUpdateListener(arg0 -> {
             int value = (int) arg0.getAnimatedValue();
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) dayBg.getLayoutParams();
             if (tmp[0] && value > layoutParams.width) {
                 tmp[0] = false;
-//                String text;
-//                switch (day) {
-//                    case 1:
-//                        text = "第 一 天";
-//                        break;
-//                    case 2:
-//                        text = "第 二 天";
-//                        break;
-//                    case 3:
-//                        text = "第 三 天";
-//                        break;
-//                    case 4:
-//                        text = "第 四 天";
-//                        break;
-//                    case 5:
-//                        text = "第 五 天";
-//                        break;
-//                    case 6:
-//                        text = "第 六 天";
-//                        break;
-//                    case 7:
-//                        text = "第 七 天";
-//                        break;
-//                    default:
-//                        text = "未 开 始";
-//                }
-//                dayText.setText(text);
                 dayText.setText(day > 0 ? "第 " + day + " 天" : "未 开 始");
             }
             layoutParams.width = value;

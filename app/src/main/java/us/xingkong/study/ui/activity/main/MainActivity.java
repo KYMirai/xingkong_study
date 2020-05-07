@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView navView;
     @BindView(R2.id.view_pager)
     ViewPager pager;
+    @BindView(R2.id.coordinator)
+    CoordinatorLayout coordinator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         Timer tExit;
         if (!isExit) {
             isExit = true; // 准备退出
-            Utils.showSnack(navView, "再按一次退出");
+            Utils.showSnack(coordinator, "再按一次退出");
             tExit = new Timer();
             tExit.schedule(new TimerTask() {
                 @Override

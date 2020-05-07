@@ -7,4 +7,16 @@
     android:orientation="vertical"
     tools:context=".ui.activity.main.fragment.home.recommend.RecommendFragment">
 
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="#00FFFFFF" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 </LinearLayout>
