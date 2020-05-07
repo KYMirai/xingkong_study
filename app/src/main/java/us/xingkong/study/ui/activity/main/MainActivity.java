@@ -1,9 +1,11 @@
 package us.xingkong.study.ui.activity.main;
 
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -39,10 +41,24 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         initView();
+
+//        //登录智慧校园的 以后可能用到
+//        Intent intent = new Intent(Intent.ACTION_MAIN);
+//        //前提：知道要跳转应用的包名、类名
+//        ComponentName componentName = new ComponentName("com.hnlg.kdweibo.client", "com.kingdee.xuntong.lightapp.runtime.view.NewsWebViewActivity");
+//        intent.setComponent(componentName);
+//        intent.putExtra("webviewUrl", "http://www.baidu.com");
+//        intent.putExtra("titleName", "-http://www.baidu.com");
+//        startActivity(intent);
     }
 
     private void initView() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // 设置状态栏底色白色
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            getWindow().setStatusBarColor(Color.WHITE);
+            // 设置状态栏字体黑色
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
         int[] ids = new int[]{R.id.navigation_home, R.id.navigation_study, R.id.navigation_read, R.id.navigation_me};
