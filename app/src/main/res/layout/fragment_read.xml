@@ -19,7 +19,7 @@
             android:layout_marginStart="12dp"
             android:layout_marginEnd="12dp"
             android:layout_centerInParent="true"
-            app:cardCornerRadius="8dp"
+            app:cardCornerRadius="18dp"
             app:cardElevation="1dp">
 
             <EditText
@@ -30,8 +30,8 @@
                 android:imeOptions="actionSearch"
                 android:importantForAutofill="no"
                 android:inputType="text"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp" />
+                android:paddingStart="17sp"
+                android:paddingEnd="18dp" />
         </androidx.cardview.widget.CardView>
 
         <View

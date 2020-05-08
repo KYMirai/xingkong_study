@@ -42,6 +42,8 @@ public class RecommendFragment extends Fragment {
     }
 
     private void initList() {
-        listView.setAdapter(new SimpleAdapter(root.getContext(), model.getData(), R.layout.msg_item, new String[]{}, new int[]{}));
+        listView.setAdapter(new SimpleAdapter(root.getContext(), model.getData(), R.layout.msg_item
+                , new String[]{"image", "head", "userName", "content"}
+                , new int[]{R.id.image, R.id.image_user, R.id.user_name, R.id.content}));
     }
 }
