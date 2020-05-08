@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -14,8 +16,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import us.xingkong.study.R;
 import us.xingkong.study.R2;
+import us.xingkong.study.utils.HiddenAnimUtils;
 
 public class RecommendFragment extends Fragment {
     private RecommendViewModel model;
@@ -42,7 +46,7 @@ public class RecommendFragment extends Fragment {
     }
 
     private void initList() {
-        listView.setAdapter(new SimpleAdapter(root.getContext(), model.getData(), R.layout.msg_item
+        listView.setAdapter(new MySimpleAdapter(root.getContext(), model.getData(), R.layout.msg_item
                 , new String[]{"image", "head", "userName", "content"}
                 , new int[]{R.id.image, R.id.image_user, R.id.user_name, R.id.content}));
     }

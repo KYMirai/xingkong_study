@@ -50,7 +50,7 @@ public class StudyFragment extends Fragment {
         final boolean[] tmp = {true};
         day++;
         createDropAnimator(position, position.getMeasuredWidth(), Utils.dip2px(view.getContext(), 23 + (((day - 1) % 7) + 1) * 42)).start();
-        ValueAnimator animator = ValueAnimator.ofInt(dayBg.getMeasuredWidth(), 0, Utils.dip2px(dayBg.getContext(), 120));
+        ValueAnimator animator = ValueAnimator.ofInt(dayBg.getMeasuredWidth(), 0, Utils.dip2px(dayBg.getContext(), 100));
         animator.addUpdateListener(arg0 -> {
             int value = (int) arg0.getAnimatedValue();
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) dayBg.getLayoutParams();
