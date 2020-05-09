@@ -43,19 +43,21 @@ public class HttpUtils {
     /**
      * 异步get
      */
-    public static void get(String url, Callback callback) {
+    public static void get(String url, boolean addSign, Callback callback) {
         MyHandler handler = null;
         if (Looper.myLooper() == Looper.getMainLooper()) {
             handler = new MyHandler(callback);
         }
         MyHandler finalHandler = handler;
         new Thread(() -> {
+            String newUrl = addSign ? addSign(url) : url;
+            Utils.log(newUrl);
             HttpURLConnection urlConnection = null;
             InputStream inputStream = null;
             InputStreamReader inputStreamReader = null;
             BufferedReader reader = null;
             try {
-                urlConnection = (HttpURLConnection) new URL(url).openConnection();
+                urlConnection = (HttpURLConnection) new URL(newUrl).openConnection();
                 //设置请求方法
                 urlConnection.setRequestMethod("GET");
                 //设置超时时间
@@ -71,6 +73,7 @@ public class HttpUtils {
                     StringBuilder response = new StringBuilder();
                     String line;
                     while ((line = reader.readLine()) != null) response.append(line);
+                    Utils.log(response.toString());
                     if (finalHandler != null) {
                         finalHandler.handleMessage(finalHandler.obtainMessage(200, response.toString()));
                     } else {
@@ -78,7 +81,6 @@ public class HttpUtils {
                     }
                 } else {
                     Exception e = new Exception("连接失败");
-                    //e.printStackTrace();
                     if (finalHandler != null) {
                         finalHandler.handleMessage(finalHandler.obtainMessage(responseCode, e));
                     } else {
@@ -102,41 +104,54 @@ public class HttpUtils {
     }
 
     /**
-     * 同步get
+     * 计算并添加sign参数
+     *
+     * @param url url
+     * @return url+sign
      */
-    public static String get(String url) {
-        HttpURLConnection urlConnection = null;
-        InputStream inputStream = null;
-        InputStreamReader inputStreamReader = null;
-        BufferedReader reader = null;
+    private static String addSign(String url) {
+        long timestamp = 0;
         try {
-            urlConnection = (HttpURLConnection) new URL(url).openConnection();
-            //设置请求方法
-            urlConnection.setRequestMethod("GET");
-            //设置超时时间
-            urlConnection.setConnectTimeout(5000);
-            urlConnection.setReadTimeout(5000);
-
-            //获取响应的状态码
-            if (urlConnection.getResponseCode() == 200) {
-                inputStream = urlConnection.getInputStream();
-                inputStreamReader = new InputStreamReader(inputStream);
-                reader = new BufferedReader(inputStreamReader);
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) response.append(line);
-                return response.toString();
-            } else {
-                return "null";
-            }
+            timestamp = Long.parseLong(get("http://" + Utils.server + "/api/time.php", false));
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
+        }
+        if (timestamp < 1000) {
+            timestamp = System.currentTimeMillis() / 1000;
+        }
+        String sign = Utils.md5(timestamp + "123456");
+        return url + ((url.contains("?")) ? "&timestamp=" : "?timestamp=") + timestamp + "&sign=" + sign;
+    }
+
+    /**
+     * 同步get
+     */
+    public static String get(String url, boolean addSign) throws Exception {
+        String newUrl = addSign ? addSign(url) : url;
+        Utils.log(newUrl);
+        HttpURLConnection urlConnection = (HttpURLConnection) new URL(newUrl).openConnection();
+        //设置请求方法
+        urlConnection.setRequestMethod("GET");
+        //设置超时时间
+        urlConnection.setConnectTimeout(5000);
+        urlConnection.setReadTimeout(5000);
+
+        //获取响应的状态码
+        if (urlConnection.getResponseCode() == 200) {
+            InputStream inputStream = urlConnection.getInputStream();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader reader = new BufferedReader(inputStreamReader);
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) response.append(line);
             close(inputStream);
             close(inputStreamReader);
             close(reader);
-            if (urlConnection != null) urlConnection.disconnect();
+            urlConnection.disconnect();
+            Utils.log(response.toString());
+            return response.toString();
+        } else {
+            throw new Exception("net error!");
         }
-        return "null";
     }
 }

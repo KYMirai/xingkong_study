@@ -17,6 +17,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import us.xingkong.study.R;
 import us.xingkong.study.R2;
+import us.xingkong.study.ui.activity.main.fragment.home.MySimpleAdapter;
 import us.xingkong.study.ui.activity.main.fragment.home.recommend.RecommendViewModel;
 
 public class SubscribeFragment extends Fragment {
@@ -25,7 +26,7 @@ public class SubscribeFragment extends Fragment {
     ListView listView;
     @BindView(R2.id.refresh)
     SwipeRefreshLayout swipeRefreshLayout;
-    SubscribeViewModel model;
+    private SubscribeViewModel model;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         model = new ViewModelProvider(this).get(SubscribeViewModel.class);
@@ -44,6 +45,8 @@ public class SubscribeFragment extends Fragment {
     }
 
     private void initList() {
-        listView.setAdapter(new SimpleAdapter(root.getContext(), model.getData(), R.layout.msg_item, new String[]{}, new int[]{}));
+        listView.setAdapter(new MySimpleAdapter(root.getContext(), model.getData(), R.layout.msg_item
+                , new String[]{"image", "head", "userName", "content"}
+                , new int[]{R.id.image, R.id.image_user, R.id.user_name, R.id.content}));
     }
 }

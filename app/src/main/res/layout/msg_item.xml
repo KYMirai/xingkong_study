@@ -8,27 +8,9 @@
     android:orientation="vertical"
     android:padding="15dp">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
-        app:cardCornerRadius="15dp"
-        app:cardElevation="6dp">
-
-        <ImageView
-            android:id="@+id/image"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/demo_img" />
-    </androidx.cardview.widget.CardView>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
         android:clipChildren="true"
         android:clipToPadding="false">
 
@@ -76,15 +58,47 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:orientation="horizontal">
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardCornerRadius="15dp"
+        app:cardElevation="6dp">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/demo_img" />
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:gravity="center">
 
         <ImageView
             android:layout_width="26dp"
             android:layout_height="26dp"
+            android:scaleType="center"
+            android:src="@drawable/ic_like" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="33 likes" />
+
+        <ImageView
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_marginStart="10dp"
+            android:scaleType="center"
             android:src="@drawable/ic_msg" />
 
         <androidx.cardview.widget.CardView
@@ -108,6 +122,13 @@
         </androidx.cardview.widget.CardView>
     </LinearLayout>
 
+    <!--    <LinearLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="15dp"-->
+    <!--        android:orientation="horizontal">-->
+    <!--    </LinearLayout>-->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -123,7 +144,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="User"
+                android:text="Tom"
                 android:textSize="13sp" />
 
             <TextView
@@ -135,7 +156,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Some Words."
+                android:text="赞！！"
                 android:textSize="13sp" />
         </LinearLayout>
 
@@ -149,7 +170,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="User"
+                android:text="John"
                 android:textSize="13sp" />
 
             <TextView
@@ -161,7 +182,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Some Words."
+                android:text="赞！！"
                 android:textSize="13sp" />
         </LinearLayout>
 
@@ -175,7 +196,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="User"
+                android:text="Lily"
                 android:textSize="13sp" />
 
             <TextView
@@ -187,7 +208,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Some Words."
+                android:text="超棒(๑•̀ㅂ•́)و✧"
                 android:textSize="13sp" />
         </LinearLayout>
 
@@ -208,7 +229,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="User"
+                    android:text="Peter"
                     android:textSize="13sp" />
 
                 <TextView
@@ -220,7 +241,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Some Words."
+                    android:text="666"
                     android:textSize="13sp" />
             </LinearLayout>
 
@@ -234,7 +255,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="User"
+                    android:text="Kong"
                     android:textSize="13sp" />
 
                 <TextView
@@ -246,7 +267,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Some Words."
+                    android:text="可以呀"
                     android:textSize="13sp" />
             </LinearLayout>
 
@@ -260,7 +281,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="User"
+                    android:text="Bily"
                     android:textSize="13sp" />
 
                 <TextView
@@ -272,7 +293,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Some Words."
+                    android:text="火钳刘明"
                     android:textSize="13sp" />
             </LinearLayout>
         </LinearLayout>
@@ -288,26 +309,5 @@
             android:text="查看更多评论"
             android:textColor="@android:color/holo_blue_dark"
             android:textSize="13sp" />
-
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center">
-
-        <ImageView
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:src="@drawable/ic_like" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:text="33 likes" />
     </LinearLayout>
 </LinearLayout>

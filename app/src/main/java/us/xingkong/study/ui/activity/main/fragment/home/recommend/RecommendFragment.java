@@ -4,10 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -16,10 +13,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import us.xingkong.study.R;
 import us.xingkong.study.R2;
-import us.xingkong.study.utils.HiddenAnimUtils;
+import us.xingkong.study.ui.activity.main.fragment.home.MySimpleAdapter;
 
 public class RecommendFragment extends Fragment {
     private RecommendViewModel model;

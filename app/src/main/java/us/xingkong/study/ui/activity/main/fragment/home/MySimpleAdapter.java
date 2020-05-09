@@ -1,4 +1,4 @@
-package us.xingkong.study.ui.activity.main.fragment.home.recommend;
+package us.xingkong.study.ui.activity.main.fragment.home;
 
 import android.content.Context;
 import android.view.View;
@@ -13,7 +13,7 @@ import us.xingkong.study.R;
 import us.xingkong.study.utils.HiddenAnimUtils;
 
 public class MySimpleAdapter extends SimpleAdapter {
-    MySimpleAdapter(Context context, List<? extends Map<String, ?>> data, int resource, String[] from, int[] to) {
+    public MySimpleAdapter(Context context, List<? extends Map<String, ?>> data, int resource, String[] from, int[] to) {
         super(context, data, resource, from, to);
     }
 

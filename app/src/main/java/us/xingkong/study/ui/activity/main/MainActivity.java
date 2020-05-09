@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         initView();
 
-        test();
+        //test();
     }
 
 //    public void test2() {
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
     public void test() {
-        HttpUtils.get("http://test.kymirai.xyz:666/api/getloginercode.php", new HttpUtils.Callback() {
+        HttpUtils.get("http://test.kymirai.xyz:666/api/getloginercode.php", true, new HttpUtils.Callback() {
             @Override
             public void onSuccess(String response) {
                 JSONObject tmp = JSON.parseObject(response);
@@ -103,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
                         startActivityForResult(intent, 666);
                     }
                 }
-                System.out.println(response);
             }
 
             @Override
@@ -116,36 +115,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 666) {
-            Timer timer = new Timer();
-            final int[] count = {20};
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    if ((--count[0]) < 1) timer.cancel();
-                    HttpUtils.get("http://test.kymirai.xyz:666/api/checkloginstatus.php?token=" + token, new HttpUtils.Callback() {
-                        @Override
-                        public void onSuccess(String response) {
-                            JSONObject json = JSON.parseObject(response);
-                            Log.i("test", response);
-                            if (json != null) {
-                                if (json.getBoolean("success")) {
-                                    runOnUiThread(() -> {
-                                        Toast.makeText(MainActivity.this, json.getJSONObject("data").getString("id"), Toast.LENGTH_SHORT).show();
-                                    });
-                                    timer.cancel();
-                                }
-                            }
-                        }
 
-                        @Override
-                        public void onFailed(int code, Exception e) {
-                            e.printStackTrace();
-                        }
-                    });
-                }
-            }, 0, 2 * 1000);
-        }
     }
 
     private void initView() {

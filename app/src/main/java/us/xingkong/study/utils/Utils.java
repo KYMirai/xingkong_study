@@ -3,14 +3,24 @@ package us.xingkong.study.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class Utils {
+    public static final String server = "test.kymirai.xyz:666";
+    private static final boolean debug = true;
+
     /**
      * 屏幕下方显示一条可拖动的悬浮消息
      *
@@ -19,6 +29,30 @@ public class Utils {
      */
     public static void showSnack(View view, String text) {
         Snackbar.make(view, text, BaseTransientBottomBar.LENGTH_SHORT).show();
+    }
+
+    @NonNull
+    static String md5(String string) {
+        if (TextUtils.isEmpty(string)) {
+            return "";
+        }
+        MessageDigest md5 = null;
+        try {
+            md5 = MessageDigest.getInstance("MD5");
+            byte[] bytes = md5.digest(string.getBytes());
+            StringBuilder result = new StringBuilder();
+            for (byte b : bytes) {
+                String temp = Integer.toHexString(b & 0xff);
+                if (temp.length() == 1) {
+                    temp = "0" + temp;
+                }
+                result.append(temp);
+            }
+            return result.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     /**
@@ -52,5 +86,11 @@ public class Utils {
     public static int dip2px(Context context, float dpValue) {
         float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
+    }
+
+    public static void log(Object object) {
+        if (debug) {
+            Log.i("debug", String.valueOf(object));
+        }
     }
 }
