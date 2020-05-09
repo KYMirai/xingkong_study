@@ -1,6 +1,7 @@
 package us.xingkong.study.utils;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 
 import androidx.annotation.NonNull;
@@ -17,7 +18,7 @@ public class HttpUtils {
     public interface Callback {
         void onSuccess(String response);
 
-        void onFaild(int code, Exception e);
+        void onFailed(int code, Exception e);
     }
 
     private static class MyHandler extends Handler {
@@ -34,7 +35,7 @@ public class HttpUtils {
             if (msg.what == 200) {
                 callback.onSuccess((String) msg.obj);
             } else {
-                callback.onFaild(msg.what, (Exception) msg.obj);
+                callback.onFailed(msg.what, (Exception) msg.obj);
             }
         }
     }
@@ -43,7 +44,11 @@ public class HttpUtils {
      * 异步get
      */
     public static void get(String url, Callback callback) {
-        MyHandler handler = new MyHandler(callback);
+        MyHandler handler = null;
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            handler = new MyHandler(callback);
+        }
+        MyHandler finalHandler = handler;
         new Thread(() -> {
             HttpURLConnection urlConnection = null;
             InputStream inputStream = null;
@@ -66,22 +71,34 @@ public class HttpUtils {
                     StringBuilder response = new StringBuilder();
                     String line;
                     while ((line = reader.readLine()) != null) response.append(line);
-                    handler.handleMessage(handler.obtainMessage(1, response.toString()));
+                    if (finalHandler != null) {
+                        finalHandler.handleMessage(finalHandler.obtainMessage(200, response.toString()));
+                    } else {
+                        callback.onSuccess(response.toString());
+                    }
                 } else {
                     Exception e = new Exception("连接失败");
-                    e.printStackTrace();
-                    handler.handleMessage(handler.obtainMessage(responseCode, e));
+                    //e.printStackTrace();
+                    if (finalHandler != null) {
+                        finalHandler.handleMessage(finalHandler.obtainMessage(responseCode, e));
+                    } else {
+                        callback.onFailed(responseCode, e);
+                    }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
-                handler.handleMessage(handler.obtainMessage(-1, e));
+                //e.printStackTrace();
+                if (finalHandler != null) {
+                    finalHandler.handleMessage(finalHandler.obtainMessage(-1, e));
+                } else {
+                    callback.onFailed(-1, e);
+                }
             } finally {
                 close(inputStream);
                 close(inputStreamReader);
                 close(reader);
                 if (urlConnection != null) urlConnection.disconnect();
             }
-        });
+        }).start();
     }
 
     /**
@@ -110,7 +127,7 @@ public class HttpUtils {
                 while ((line = reader.readLine()) != null) response.append(line);
                 return response.toString();
             } else {
-                return null;
+                return "null";
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -120,6 +137,6 @@ public class HttpUtils {
             close(reader);
             if (urlConnection != null) urlConnection.disconnect();
         }
-        return null;
+        return "null";
     }
 }

@@ -1,19 +1,32 @@
 package us.xingkong.study.ui.activity.main;
 
+import android.app.Application;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import java.lang.reflect.Constructor;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -25,6 +38,7 @@ import us.xingkong.study.ui.activity.main.fragment.read.ReadFragment;
 import us.xingkong.study.ui.activity.main.fragment.home.HomeFragment;
 import us.xingkong.study.ui.activity.main.fragment.me.MeFragment;
 import us.xingkong.study.ui.activity.main.fragment.study.StudyFragment;
+import us.xingkong.study.utils.HttpUtils;
 import us.xingkong.study.utils.Utils;
 
 import static androidx.fragment.app.FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
@@ -37,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     ViewPager pager;
     @BindView(R2.id.coordinator)
     CoordinatorLayout coordinator;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +60,92 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         initView();
 
-//        //登录智慧校园的 以后可能用到
-//        Intent intent = new Intent(Intent.ACTION_MAIN);
-//        //前提：知道要跳转应用的包名、类名
-//        ComponentName componentName = new ComponentName("com.hnlg.kdweibo.client", "com.kingdee.xuntong.lightapp.runtime.view.NewsWebViewActivity");
-//        intent.setComponent(componentName);
-//        intent.putExtra("webviewUrl", "http://www.baidu.com");
-//        intent.putExtra("titleName", "-http://www.baidu.com");
-//        startActivity(intent);
+        test();
+    }
+
+//    public void test2() {
+//        try {
+////            Context othercontext = createPackageContext("com.hnlg.kdweibo.client", Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);//根据Context取得对应的SharedPreferences
+////            SharedPreferences sp = othercontext.getSharedPreferences("EMP_SHELL_SP_KEY", Context.MODE_WORLD_READABLE + Context.MODE_WORLD_WRITEABLE);
+////            Class clazz = othercontext.getClassLoader().loadClass("com.kingdee.emp.shell.a.a");
+////            Constructor declaredConstructor = clazz.getDeclaredConstructor();
+////            declaredConstructor.setAccessible(true);
+////            Object object = declaredConstructor.newInstance();
+////            String text = (String) clazz.getMethod("getOpenToken").invoke(object);
+////
+////            Toast.makeText(getApplicationContext(), "T:" + text, Toast.LENGTH_SHORT).show();
+//            Context othercontext = createPackageContext("com.hnlg.kdweibo.client", Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);//根据Context取得对应的SharedPreferences
+//            //Class clazz = othercontext.getClassLoader().loadClass("com.kingdee.eas.eclite.ui.EContactApplication");
+//
+//            SharedPreferences sp = othercontext.getSharedPreferences("EMP_SHELL_SP_KEY", MODE_WORLD_WRITEABLE);
+//            sp.edit().putString("xt_me_name", "123").commit();
+//            Toast.makeText(getApplicationContext(), "T:" + sp.getString("xt_me_name", "???"), Toast.LENGTH_SHORT).show();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
+
+    public void test() {
+        HttpUtils.get("http://test.kymirai.xyz:666/api/getloginercode.php", new HttpUtils.Callback() {
+            @Override
+            public void onSuccess(String response) {
+                JSONObject tmp = JSON.parseObject(response);
+                token = tmp.getJSONObject("data").getString("token");
+                if (tmp.getBoolean("success")) {
+                    if (!TextUtils.isEmpty(token)) {
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        ComponentName componentName = new ComponentName("com.hnlg.kdweibo.client", "com.kingdee.xuntong.lightapp.runtime.view.NewsWebViewActivity");
+                        intent.setComponent(componentName);
+                        intent.putExtra("webviewUrl", "http://test.kymirai.xyz:666/login.php?token=" + token);
+                        //System.out.println(token);
+                        intent.putExtra("titleName", "登录");
+                        startActivityForResult(intent, 666);
+                    }
+                }
+                System.out.println(response);
+            }
+
+            @Override
+            public void onFailed(int code, Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 666) {
+            Timer timer = new Timer();
+            final int[] count = {20};
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if ((--count[0]) < 1) timer.cancel();
+                    HttpUtils.get("http://test.kymirai.xyz:666/api/checkloginstatus.php?token=" + token, new HttpUtils.Callback() {
+                        @Override
+                        public void onSuccess(String response) {
+                            JSONObject json = JSON.parseObject(response);
+                            Log.i("test", response);
+                            if (json != null) {
+                                if (json.getBoolean("success")) {
+                                    runOnUiThread(() -> {
+                                        Toast.makeText(MainActivity.this, json.getJSONObject("data").getString("id"), Toast.LENGTH_SHORT).show();
+                                    });
+                                    timer.cancel();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailed(int code, Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+            }, 0, 2 * 1000);
+        }
     }
 
     private void initView() {
