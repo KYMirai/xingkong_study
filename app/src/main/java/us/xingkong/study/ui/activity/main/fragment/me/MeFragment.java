@@ -23,6 +23,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -31,6 +32,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import us.xingkong.study.R;
 import us.xingkong.study.R2;
+import us.xingkong.study.bean.User;
 import us.xingkong.study.ui.activity.main.MainActivity;
 import us.xingkong.study.utils.HttpUtils;
 import us.xingkong.study.utils.Utils;
@@ -38,9 +40,7 @@ import us.xingkong.study.utils.Utils;
 import static android.content.Context.ACTIVITY_SERVICE;
 
 public class MeFragment extends Fragment {
-
     private MeViewModel meViewModel;
-    private String token;
 
     @BindView(R2.id.login)
     Button loginButton;
@@ -60,62 +60,37 @@ public class MeFragment extends Fragment {
 
     @OnClick(R2.id.login)
     void login() {
-        HttpUtils.get("http://" + Utils.server + "/api/getloginercode.php", true, new HttpUtils.Callback() {
-            @Override
-            public void onSuccess(String response) {
-                JSONObject tmp = JSON.parseObject(response);
-                token = tmp.getJSONObject("data").getString("token");
-                if (tmp.getBoolean("success")) {
-                    if (!TextUtils.isEmpty(token)) {
-                        Intent intent = new Intent(Intent.ACTION_MAIN);
-                        ComponentName componentName = new ComponentName("com.hnlg.kdweibo.client", "com.kingdee.xuntong.lightapp.runtime.view.NewsWebViewActivity");
-                        intent.setComponent(componentName);
-                        intent.putExtra("webviewUrl", "http://" + Utils.server + "/login.php?token=" + token);
-                        intent.putExtra("titleName", "登录");
-                        startActivityForResult(intent, 666);
-                    }
-                }
-            }
-
-            @Override
-            public void onFailed(int code, Exception e) {
-                e.printStackTrace();
-            }
-        });
+        meViewModel.loginByQR(this);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 666) {
-            Timer timer = new Timer();
-            final int[] count = {10};
-            timer.schedule(new TimerTask() {
+            meViewModel.checkLogin(new MeViewModel.onLoginCallback() {
                 @Override
-                public void run() {
-                    if ((--count[0]) < 1) timer.cancel();
-                    try {
-                        String result = HttpUtils.get("http://" + Utils.server + "/api/checkloginstatus.php?token=" + token, true);
-                        JSONObject json = JSON.parseObject(result);
-                        if (json.getBoolean("success")) {
-                            setTopApp();
-                            getActivity().runOnUiThread(() -> {
-                                loginButton.setText(json.getJSONObject("data").getString("name"));
-                            });
-                            timer.cancel();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                public void onSuccess(User userMine) {
+                    setTopApp();
+                    requireActivity().runOnUiThread(() -> loginButton.setText(userMine.nick));
                 }
-            }, 0, 2 * 1000);
+
+                @Override
+                public void onFiled() {
+
+                }
+            });
         }
     }
 
+    /**
+     * 切换回前台
+     */
     private void setTopApp() {
         try {
-            ActivityManager activtyManager = (ActivityManager) getContext().getSystemService(Context.ACTIVITY_SERVICE);
-            activtyManager.moveTaskToFront(getActivity().getTaskId(), ActivityManager.MOVE_TASK_WITH_HOME);
+            ActivityManager activtyManager = (ActivityManager) requireContext().getSystemService(Context.ACTIVITY_SERVICE);
+            if (activtyManager != null) {
+                activtyManager.moveTaskToFront(requireActivity().getTaskId(), ActivityManager.MOVE_TASK_WITH_HOME);
+            }
         } catch (Throwable e) {
             e.printStackTrace();
         }
