@@ -26,17 +26,17 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="5px"
             android:layout_alignParentBottom="true"
-            android:alpha="0.5"
-            android:background="@android:color/darker_gray" />
+            android:background="#D9D9D9"
+            tools:ignore="PxUsage" />
     </RelativeLayout>
 
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_2"
+        android:background="@drawable/bg3"
         android:clipChildren="true"
         android:clipToPadding="false"
         android:padding="0dp">
@@ -57,7 +57,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center"
                 android:layout_marginTop="103dp"
-                android:alpha="0.9"
+                android:alpha="0.85"
                 android:background="@drawable/day2">
 
                 <androidx.cardview.widget.CardView
@@ -341,19 +341,20 @@
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:text="签到"
-                        android:textColor="@android:color/white"
+                        android:textColor="#404040"
                         android:textSize="24sp" />
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/kecheng"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_below="@id/sign_card"
                 android:layout_marginStart="50dp"
                 android:layout_marginTop="50dp"
                 android:layout_marginEnd="50dp"
-                android:alpha="0.95"
+                android:alpha="0.9"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"
@@ -405,7 +406,7 @@
                 android:layout_marginStart="50dp"
                 android:layout_marginTop="130dp"
                 android:layout_marginEnd="50dp"
-                android:alpha="0.95"
+                android:alpha="0.9"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"
@@ -457,7 +458,7 @@
                 android:layout_marginStart="50dp"
                 android:layout_marginTop="210dp"
                 android:layout_marginEnd="50dp"
-                android:alpha="0.95"
+                android:alpha="0.9"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"

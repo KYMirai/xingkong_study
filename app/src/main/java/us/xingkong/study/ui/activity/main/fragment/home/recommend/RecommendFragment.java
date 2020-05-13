@@ -11,11 +11,15 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import us.xingkong.study.R;
 import us.xingkong.study.R2;
 import us.xingkong.study.ui.activity.main.fragment.home.MySimpleAdapter;
+import us.xingkong.study.utils.Utils;
 
 public class RecommendFragment extends Fragment {
     private RecommendViewModel model;
@@ -42,8 +46,20 @@ public class RecommendFragment extends Fragment {
     }
 
     private void initList() {
-        listView.setAdapter(new MySimpleAdapter(root.getContext(), model.getData(), R.layout.msg_item
-                , new String[]{"image", "head", "userName", "content"}
-                , new int[]{R.id.image, R.id.image_user, R.id.user_name, R.id.content}));
+        model.getData(new RecommendViewModel.onGetDataCallback() {
+            @Override
+            public void onSuccess(ArrayList<Map<String, Object>> data) {
+                requireActivity().runOnUiThread(() -> {
+                    listView.setAdapter(new MySimpleAdapter(requireActivity(), data, R.layout.msg_item
+                            , new String[]{"userName", "content", "likes"}
+                            , new int[]{R.id.user_name, R.id.content, R.id.likes}));
+                });
+            }
+
+            @Override
+            public void onFiled(String msg) {
+                Utils.showSnack(requireView(), msg);
+            }
+        });
     }
 }

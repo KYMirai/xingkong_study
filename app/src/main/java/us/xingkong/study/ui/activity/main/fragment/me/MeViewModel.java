@@ -1,8 +1,6 @@
 package us.xingkong.study.ui.activity.main.fragment.me;
 
-import android.app.ActivityManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
@@ -15,8 +13,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import us.xingkong.study.bean.User;
+import us.xingkong.study.ui.activity.main.fragment.study.StudyFragment;
 import us.xingkong.study.utils.HttpUtils;
 import us.xingkong.study.utils.Utils;
+
+import static us.xingkong.study.utils.UserUtil.userMine;
 
 public class MeViewModel extends ViewModel {
     interface onLoginCallback {
@@ -25,7 +26,6 @@ public class MeViewModel extends ViewModel {
         void onFiled();
     }
 
-    private User userMine;
     private String token;
 
     public MeViewModel() {
@@ -36,28 +36,28 @@ public class MeViewModel extends ViewModel {
      * 通过接口判断时候登录成功
      */
     void checkLogin(onLoginCallback callback) {
-        Timer timer = new Timer();
-        final int[] count = {10};
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if ((--count[0]) < 1) {
-                    callback.onFiled();
-                    timer.cancel();
-                }
+        new Thread(() -> {
+            int count = 10;
+            while (--count > 0) {
                 try {
                     String result = HttpUtils.get("http://" + Utils.server + "/api/checkloginstatus.php?token=" + token, true);
                     JSONObject json = JSON.parseObject(result);
                     if (json.getBoolean("success")) {
                         userMine = JSON.toJavaObject(json.getJSONObject("data"), User.class);
+                        userMine.img = "http://test.kymirai.xyz:666/tmp/" + userMine.img;
                         callback.onSuccess(userMine);
-                        timer.cancel();
+                        return;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-        }, 0, 2 * 1000);
+        }).start();
     }
 
     /**
@@ -68,15 +68,21 @@ public class MeViewModel extends ViewModel {
             @Override
             public void onSuccess(String response) {
                 JSONObject tmp = JSON.parseObject(response);
-                token = tmp.getJSONObject("data").getString("token");
-                if (tmp.getBoolean("success")) {
-                    if (!TextUtils.isEmpty(token)) {
-                        Intent intent = new Intent(Intent.ACTION_MAIN);
-                        ComponentName componentName = new ComponentName("com.hnlg.kdweibo.client", "com.kingdee.xuntong.lightapp.runtime.view.NewsWebViewActivity");
-                        intent.setComponent(componentName);
-                        intent.putExtra("webviewUrl", "http://" + Utils.server + "/login.php?token=" + token);
-                        intent.putExtra("titleName", "登录");
-                        fragment.startActivityForResult(intent, 666);
+                if (tmp != null) {
+                    if (tmp.getBoolean("success")) {
+                        token = tmp.getJSONObject("data").getString("token");
+                        if (!TextUtils.isEmpty(token)) {
+                            Intent intent = new Intent(Intent.ACTION_MAIN);
+                            ComponentName componentName = new ComponentName("com.hnlg.kdweibo.client", "com.kingdee.xuntong.lightapp.runtime.view.NewsWebViewActivity");
+                            intent.setComponent(componentName);
+                            intent.putExtra("webviewUrl", "http://" + Utils.server + "/login.php?token=" + token);
+                            intent.putExtra("titleName", "登录");
+                            fragment.startActivityForResult(intent, 666);
+                        }
+                    } else {
+                        fragment.requireActivity().runOnUiThread(() -> {
+                            Utils.showSnack(fragment.requireView(), tmp.getString("msg"));
+                        });
                     }
                 }
             }

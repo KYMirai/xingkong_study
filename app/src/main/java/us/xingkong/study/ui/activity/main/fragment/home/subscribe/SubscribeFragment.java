@@ -45,8 +45,8 @@ public class SubscribeFragment extends Fragment {
     }
 
     private void initList() {
-        listView.setAdapter(new MySimpleAdapter(root.getContext(), model.getData(), R.layout.msg_item
-                , new String[]{"image", "head", "userName", "content"}
-                , new int[]{R.id.image, R.id.image_user, R.id.user_name, R.id.content}));
+        listView.setAdapter(new MySimpleAdapter(requireActivity(), model.getData(), R.layout.msg_item
+                , new String[]{"image", "head", "userName", "content", "likes"}
+                , new int[]{R.id.image, R.id.image_user, R.id.user_name, R.id.content, R.id.likes}));
     }
 }

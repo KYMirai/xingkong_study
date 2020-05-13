@@ -13,6 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import static com.alibaba.fastjson.util.IOUtils.close;
+import static us.xingkong.study.utils.Utils.log;
 
 public class HttpUtils {
     public interface Callback {
@@ -44,6 +45,10 @@ public class HttpUtils {
      * 异步get
      */
     public static void get(String url, boolean addSign, Callback callback) {
+        get(url, addSign, "", callback);
+    }
+
+    public static void get(String url, boolean addSign, String cookie, Callback callback) {
         MyHandler handler = null;
         if (Looper.myLooper() == Looper.getMainLooper()) {
             handler = new MyHandler(callback);
@@ -51,7 +56,7 @@ public class HttpUtils {
         MyHandler finalHandler = handler;
         new Thread(() -> {
             String newUrl = addSign ? addSign(url) : url;
-            Utils.log(newUrl);
+            log(newUrl);
             HttpURLConnection urlConnection = null;
             InputStream inputStream = null;
             InputStreamReader inputStreamReader = null;
@@ -64,6 +69,14 @@ public class HttpUtils {
                 urlConnection.setConnectTimeout(5000);
                 urlConnection.setReadTimeout(5000);
 
+                urlConnection.setRequestProperty("Accept", "*/*");
+                urlConnection.setRequestProperty("X-Requested-With", "XMLHttpRequest");
+                urlConnection.setRequestProperty("Connection", "Keep-Alive");
+                urlConnection.setRequestProperty("Accept-Language", "zh-CN,zh;q=0.9,zh-TW;q=0.8,en;q=0.7");
+                urlConnection.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+                urlConnection.setRequestProperty("Cookie", cookie);
+                log("Cookie:" + cookie);
+
                 //获取响应的状态码
                 int responseCode = urlConnection.getResponseCode();
                 if (responseCode == 200) {
@@ -73,14 +86,14 @@ public class HttpUtils {
                     StringBuilder response = new StringBuilder();
                     String line;
                     while ((line = reader.readLine()) != null) response.append(line);
-                    Utils.log(response.toString());
+                    log(response.toString());
                     if (finalHandler != null) {
                         finalHandler.handleMessage(finalHandler.obtainMessage(200, response.toString()));
                     } else {
                         callback.onSuccess(response.toString());
                     }
                 } else {
-                    Exception e = new Exception("连接失败");
+                    Exception e = new Exception("连接失败:" + responseCode);
                     if (finalHandler != null) {
                         finalHandler.handleMessage(finalHandler.obtainMessage(responseCode, e));
                     } else {
@@ -128,7 +141,7 @@ public class HttpUtils {
      */
     public static String get(String url, boolean addSign) throws Exception {
         String newUrl = addSign ? addSign(url) : url;
-        Utils.log(newUrl);
+        log(newUrl);
         HttpURLConnection urlConnection = (HttpURLConnection) new URL(newUrl).openConnection();
         //设置请求方法
         urlConnection.setRequestMethod("GET");
@@ -148,7 +161,7 @@ public class HttpUtils {
             close(inputStreamReader);
             close(reader);
             urlConnection.disconnect();
-            Utils.log(response.toString());
+            log(response.toString());
             return response.toString();
         } else {
             throw new Exception("net error!");

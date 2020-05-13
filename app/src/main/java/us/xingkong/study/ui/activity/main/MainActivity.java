@@ -1,20 +1,13 @@
 package us.xingkong.study.ui.activity.main;
 
-import android.app.Application;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -26,7 +19,6 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-import java.lang.reflect.Constructor;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -34,7 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import us.xingkong.study.R;
 import us.xingkong.study.R2;
-import us.xingkong.study.ui.activity.main.fragment.read.ReadFragment;
+import us.xingkong.study.bean.User;
 import us.xingkong.study.ui.activity.main.fragment.home.HomeFragment;
 import us.xingkong.study.ui.activity.main.fragment.me.MeFragment;
 import us.xingkong.study.ui.activity.main.fragment.study.StudyFragment;
@@ -42,6 +34,9 @@ import us.xingkong.study.utils.HttpUtils;
 import us.xingkong.study.utils.Utils;
 
 import static androidx.fragment.app.FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
+import static us.xingkong.study.utils.UserUtil.isLogin;
+import static us.xingkong.study.utils.UserUtil.userMine;
+import static us.xingkong.study.utils.Utils.sharedPreferences;
 
 public class MainActivity extends AppCompatActivity {
     private static Boolean isExit = false;
@@ -52,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R2.id.coordinator)
     CoordinatorLayout coordinator;
     private String token;
+    public static Runnable login;
+    private MeFragment meFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,57 +56,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         initView();
-
-        //test();
-    }
-
-//    public void test2() {
-//        try {
-////            Context othercontext = createPackageContext("com.hnlg.kdweibo.client", Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);//根据Context取得对应的SharedPreferences
-////            SharedPreferences sp = othercontext.getSharedPreferences("EMP_SHELL_SP_KEY", Context.MODE_WORLD_READABLE + Context.MODE_WORLD_WRITEABLE);
-////            Class clazz = othercontext.getClassLoader().loadClass("com.kingdee.emp.shell.a.a");
-////            Constructor declaredConstructor = clazz.getDeclaredConstructor();
-////            declaredConstructor.setAccessible(true);
-////            Object object = declaredConstructor.newInstance();
-////            String text = (String) clazz.getMethod("getOpenToken").invoke(object);
-////
-////            Toast.makeText(getApplicationContext(), "T:" + text, Toast.LENGTH_SHORT).show();
-//            Context othercontext = createPackageContext("com.hnlg.kdweibo.client", Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);//根据Context取得对应的SharedPreferences
-//            //Class clazz = othercontext.getClassLoader().loadClass("com.kingdee.eas.eclite.ui.EContactApplication");
-//
-//            SharedPreferences sp = othercontext.getSharedPreferences("EMP_SHELL_SP_KEY", MODE_WORLD_WRITEABLE);
-//            sp.edit().putString("xt_me_name", "123").commit();
-//            Toast.makeText(getApplicationContext(), "T:" + sp.getString("xt_me_name", "???"), Toast.LENGTH_SHORT).show();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-
-    public void test() {
-        HttpUtils.get("http://test.kymirai.xyz:666/api/getloginercode.php", true, new HttpUtils.Callback() {
-            @Override
-            public void onSuccess(String response) {
-                JSONObject tmp = JSON.parseObject(response);
-                token = tmp.getJSONObject("data").getString("token");
-                if (tmp.getBoolean("success")) {
-                    if (!TextUtils.isEmpty(token)) {
-                        Intent intent = new Intent(Intent.ACTION_MAIN);
-                        ComponentName componentName = new ComponentName("com.hnlg.kdweibo.client", "com.kingdee.xuntong.lightapp.runtime.view.NewsWebViewActivity");
-                        intent.setComponent(componentName);
-                        intent.putExtra("webviewUrl", "http://test.kymirai.xyz:666/login.php?token=" + token);
-                        //System.out.println(token);
-                        intent.putExtra("titleName", "登录");
-                        startActivityForResult(intent, 666);
-                    }
-                }
-            }
-
-            @Override
-            public void onFailed(int code, Exception e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     @Override
@@ -127,9 +73,10 @@ public class MainActivity extends AppCompatActivity {
             // 设置状态栏字体黑色
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
-        int[] ids = new int[]{R.id.navigation_home, R.id.navigation_study, R.id.navigation_read, R.id.navigation_me};
+        int[] ids = new int[]{R.id.navigation_home, R.id.navigation_study, /*R.id.navigation_read,*/ R.id.navigation_me};
+        meFragment = new MeFragment();
         pager.setAdapter(new AppPagerAdapter(getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT,
-                new Fragment[]{new HomeFragment(), new StudyFragment(), new ReadFragment(), new MeFragment()}));
+                new Fragment[]{new HomeFragment(), new StudyFragment(), /*new ReadFragment(),*/ meFragment}));
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -152,6 +99,33 @@ public class MainActivity extends AppCompatActivity {
             setTitle(item.getTitle());
             return true;
         });
+        if (sharedPreferences != null) {
+            String gcuId = sharedPreferences.getString("gcuId", "");
+            String at = sharedPreferences.getString("at", "");
+            if (!TextUtils.isEmpty(at) && !TextUtils.isEmpty(gcuId)) {
+                HttpUtils.get("http://" + Utils.server + "/api/loginByToken.php?at=" + at + "&gcuId=" + gcuId, true, new HttpUtils.Callback() {
+                    @Override
+                    public void onSuccess(String response) {
+                        JSONObject res = JSON.parseObject(response);
+                        if (res != null && res.getBoolean("success")) {
+                            userMine = JSON.toJavaObject(res.getJSONObject("data"), User.class);
+                            userMine.lightAppUrl = sharedPreferences.getString("lightAppUrl", "");
+                            userMine.img = "http://test.kymirai.xyz:666/tmp/" + userMine.img;
+                            isLogin = true;
+                        }
+                    }
+
+                    @Override
+                    public void onFailed(int code, Exception e) {
+
+                    }
+                });
+            }
+        }
+        login = () -> {
+            pager.setCurrentItem(3);
+            meFragment.login();
+        };
     }
 
     @Override

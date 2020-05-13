@@ -2,6 +2,7 @@ package us.xingkong.study.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
@@ -20,6 +21,7 @@ import java.security.NoSuchAlgorithmException;
 public class Utils {
     public static final String server = "test.kymirai.xyz:666";
     private static final boolean debug = true;
+    public static SharedPreferences sharedPreferences;
 
     /**
      * 屏幕下方显示一条可拖动的悬浮消息
@@ -30,6 +32,11 @@ public class Utils {
     public static void showSnack(View view, String text) {
         Snackbar.make(view, text, BaseTransientBottomBar.LENGTH_SHORT).show();
     }
+
+    public static void showSnack(View view, String text, String tip, View.OnClickListener listener) {
+        Snackbar.make(view, text, BaseTransientBottomBar.LENGTH_SHORT).setAction(tip, listener).show();
+    }
+
 
     @NonNull
     static String md5(String string) {
